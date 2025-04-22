@@ -33,3 +33,4 @@ C:\Users\alexe\Desktop\Neurosky-connection\Neurosky\obj\Release\net8.0\refint\Ne
 C:\Users\alexe\Desktop\Neurosky-connection\Neurosky\obj\Release\net8.0\Neurosky.pdb
 C:\Users\alexe\Desktop\Neurosky-connection\Neurosky\obj\Release\net8.0\Neurosky.genruntimeconfig.cache
 C:\Users\alexe\Desktop\Neurosky-connection\Neurosky\obj\Release\net8.0\ref\Neurosky.dll
+C:\Users\alexe\Desktop\Neurosky-connection\Neurosky\obj\Release\net8.0\Neurosky.sourcelink.json

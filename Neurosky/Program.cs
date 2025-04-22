@@ -5,7 +5,6 @@ using System.Text;
 class MindWaveReader
 {
     static SerialPort serialPort;
-
     static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
