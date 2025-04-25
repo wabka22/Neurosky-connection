@@ -19,9 +19,6 @@ class MindWaveReader
         string projectRoot = Path.GetFullPath(Path.Combine(exePath, @"..\..\..\..\"));
         string dataFolder = Path.Combine(projectRoot, "data");
 
-        // Создаем папку data, если ее нет
-        Directory.CreateDirectory(dataFolder);
-
         txtFilePath = Path.Combine(dataFolder, $"mindwave_data_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
 
         try
@@ -241,7 +238,6 @@ class MindWaveReader
 
     static void WriteToTxt(byte code, string value)
     {
-        // Преобразуем код из байта в десятичное число
         int decimalCode = code;
         string line = $"{decimalCode},{value}";
         txtWriter.WriteLine(line);
