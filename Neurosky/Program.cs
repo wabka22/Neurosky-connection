@@ -238,8 +238,7 @@ class MindWaveReader
 
     static void WriteToTxt(byte code, string value)
     {
-        int decimalCode = code;
-        string line = $"{decimalCode},{value}";
+        string line = $"0x{code:X2},{value}";
         txtWriter.WriteLine(line);
         txtWriter.Flush();
     }
