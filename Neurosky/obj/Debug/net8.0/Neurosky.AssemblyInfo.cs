@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Neurosky")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55a404ca4de945e516e47962a4aff886aa3a880f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e61e98faf1fde360a8d428c3b8f9947329c7891a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Neurosky")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Neurosky")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

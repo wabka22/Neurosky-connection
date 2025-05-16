@@ -19,12 +19,12 @@ class MindWaveReader
         string projectRoot = Path.GetFullPath(Path.Combine(exePath, @"..\..\..\..\"));
         string dataFolder = Path.Combine(projectRoot, "data");
 
-        txtFilePath = Path.Combine(dataFolder, $"mindwave_data_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+        txtFilePath = Path.Combine(dataFolder, $"mindwave_timestamps_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
 
         try
         {
             txtWriter = new StreamWriter(txtFilePath, false, Encoding.UTF8);
-            Console.WriteLine($"Data will be saved to: {txtFilePath}");
+            Console.WriteLine($"Timestamps will be saved to: {txtFilePath}");
         }
         catch (Exception ex)
         {
@@ -63,7 +63,7 @@ class MindWaveReader
 
         serialPort.Close();
         txtWriter.Close();
-        Console.WriteLine("Connection closed. Data saved to: " + txtFilePath);
+        Console.WriteLine("Connection closed. Timestamps saved to: " + txtFilePath);
     }
 
     static void RequestData()
@@ -89,157 +89,54 @@ class MindWaveReader
         for (int i = 0; i < data.Length; i++)
         {
             byte code = data[i];
-            string valueStr = "";
 
             switch (code)
             {
-                case 0x02: // POOR_SIGNAL quality (0-255)
-                    if (i + 1 < data.Length)
-                    {
-                        valueStr = data[i + 1].ToString();
-                        Console.WriteLine($"[SIGNAL] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i++;
-                    }
-                    break;
-
-                case 0x03: // HEART_RATE (0-255)
-                    if (i + 1 < data.Length)
-                    {
-                        valueStr = data[i + 1].ToString();
-                        Console.WriteLine($"[HR] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i++;
-                    }
-                    break;
-
-                case 0x04: // ATTENTION eSense (0-100)
-                    if (i + 1 < data.Length)
-                    {
-                        valueStr = data[i + 1].ToString();
-                        Console.WriteLine($"[eSense] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i++;
-                    }
-                    break;
-
-                case 0x05: // MEDITATION eSense (0-100)
-                    if (i + 1 < data.Length)
-                    {
-                        valueStr = data[i + 1].ToString();
-                        Console.WriteLine($"[eSense] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i++;
-                    }
-                    break;
-
-                case 0x06: // 8BIT_RAW wave value (0-255)
-                    if (i + 1 < data.Length)
-                    {
-                        valueStr = data[i + 1].ToString();
-                        Console.WriteLine($"[EEG] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i++;
-                    }
-                    break;
-
-                case 0x07: // RAW_MARKER section start
-                    valueStr = "1";
-                    Console.WriteLine($"[MARKER] 0x{code:X2}");
-                    WriteToTxt(code, valueStr);
-                    break;
-
-                case 0x80: // RAW wave value (2 bytes)
-                    if (i + 2 < data.Length)
-                    {
-                        short rawValue = (short)((data[i + 1] << 8) | data[i + 2]);
-                        valueStr = rawValue.ToString();
-                        Console.WriteLine($"[EEG] 0x{code:X2}: {valueStr}");
-                        WriteToTxt(code, valueStr);
-                        i += 2;
-                    }
-                    break;
-
-                case 0x81: // EEG_POWER (8x4 bytes)
-                    if (i + 32 < data.Length)
-                    {
-                        Console.WriteLine("[EEG] EEG_POWER:");
-                        for (int j = 0; j < 8; j++)
-                        {
-                            byte[] floatBytes = new byte[4]
-                            {
-                                data[i + 1 + j * 4],
-                                data[i + 2 + j * 4],
-                                data[i + 3 + j * 4],
-                                data[i + 4 + j * 4]
-                            };
-
-                            if (BitConverter.IsLittleEndian)
-                            {
-                                Array.Reverse(floatBytes);
-                            }
-
-                            float value = BitConverter.ToSingle(floatBytes, 0);
-                            valueStr = value.ToString(CultureInfo.InvariantCulture);
-                            Console.WriteLine($"  0x{code:X2}: {valueStr}");
-                            WriteToTxt(code, valueStr);
-                        }
-                        i += 32;
-                    }
-                    break;
-
                 case 0x83: // ASIC_EEG_POWER (8x3 bytes)
                     if (i + 24 < data.Length)
                     {
-                        Console.WriteLine("[EEG] ASIC_EEG_POWER:");
-                        for (int j = 0; j < 8; j++)
-                        {
-                            int offset = i + 1 + j * 3;
-                            uint value = (uint)((data[offset] << 16) | (data[offset + 1] << 8) | data[offset + 2]);
-                            valueStr = value.ToString();
-                            Console.WriteLine($"  0x{code:X2}: {valueStr}");
-                            WriteToTxt(code, valueStr);
-                        }
+                        Console.WriteLine("[EEG] ASIC_EEG_POWER data received");
+                        // Записываем только метку времени
+                        WriteTimestampToTxt();
                         i += 24;
                     }
                     break;
 
-                case 0x86: // RRINTERVAL (2 bytes)
-                    if (i + 2 < data.Length)
-                    {
-                        ushort rrInterval = (ushort)((data[i + 1] << 8) | data[i + 2]);
-                        valueStr = rrInterval.ToString();
-                        Console.WriteLine($"[HR] 0x{code:X2}: {valueStr} ms");
-                        WriteToTxt(code, valueStr);
-                        i += 2;
-                    }
-                    break;
-
-                case 0x55: // EXCODE (reserved)
-                    valueStr = "1";
-                    Console.WriteLine($"[SYSTEM] 0x{code:X2}");
-                    WriteToTxt(code, valueStr);
-                    break;
-
-                case 0xAA: // SYNC (reserved)
-                    valueStr = "1";
-                    Console.WriteLine($"[SYSTEM] 0x{code:X2}");
-                    WriteToTxt(code, valueStr);
-                    break;
-
                 default:
-                    valueStr = "1";
-                    Console.WriteLine($"[UNKNOWN] 0x{code:X2}");
-                    WriteToTxt(code, valueStr);
+                    Console.WriteLine($"[IGNORED] Received data with code 0x{code:X2}");
+                    i += SkipBytesForCode(code, data, i);
                     break;
             }
         }
     }
 
-    static void WriteToTxt(byte code, string value)
+    static int SkipBytesForCode(byte code, byte[] data, int currentIndex)
     {
-        string line = $"0x{code:X2},{value}";
-        txtWriter.WriteLine(line);
+        switch (code)
+        {
+            case 0x02:
+            case 0x03:
+            case 0x04:
+            case 0x05:
+            case 0x06:
+                return 1;
+            case 0x80:
+            case 0x86:
+                return 2;
+            case 0x81:
+                return 32;
+            case 0x83:
+                return 24;
+            default:
+                return 1;
+        }
+    }
+
+    static void WriteTimestampToTxt()
+    {
+        DateTime now = DateTime.Now;
+        string timestamp = $"{now.Minute}:{now.Second}.{now.Millisecond}";
+        txtWriter.WriteLine(timestamp);
         txtWriter.Flush();
     }
 }
